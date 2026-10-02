@@ -27,16 +27,31 @@ def read_json(path: Path) -> dict:
 
 
 class Lock:
-    """Fail immediately if another local writer is active; hooks never wait on training."""
+    """Kernel lock released on process exit, including hook timeout or crash.
+
+    The sentinel stays in place so concurrent processes always lock the same inode.
+    File presence does not mean the lock is held.
+    """
     def __init__(self, path: Path):
         self.path = path
 
     def __enter__(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.fd = os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-        os.write(self.fd, str(os.getpid()).encode())
+        self.fd = os.open(self.path, os.O_CREAT | os.O_RDWR, 0o600)
+        try:
+            if os.fstat(self.fd).st_size == 0:
+                os.write(self.fd, b"0")
+            os.lseek(self.fd, 0, os.SEEK_SET)
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(self.fd, msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as error:
+            os.close(self.fd)
+            raise FileExistsError("another local writer holds the lock") from error
         return self
 
     def __exit__(self, *args):
         os.close(self.fd)
-        self.path.unlink(missing_ok=True)

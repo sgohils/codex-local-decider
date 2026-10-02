@@ -31,6 +31,9 @@ Uncertainty, deferred decisions, corruption, and unavailable models emit `{}`.
 Such chats remain in their assigned group regardless of whether advice was delivered.
 The normal promotion gate is unchanged; the study uses a separate experimental path.
 
+Writers use kernel-backed locks that release automatically if a hook crashes or
+times out. A persistent lock sentinel is not evidence of an active writer.
+
 ## Measurements and privacy
 
 The installed Codex 0.159.3 transcript was inspected for **schema only**, without

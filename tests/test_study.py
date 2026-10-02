@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -294,3 +296,19 @@ def test_response_revisions_update_once_and_invalid_corrections_are_unknown(setu
     usage(path, event, "same-response", 100, 5)
     refresh(data)
     assert not export(data)["sessions"][0]["turns"][0]["usage_valid"]
+
+
+def test_crashed_hook_releases_registry_lock(tmp_path):
+    from local_decider.storage import Lock
+    from local_decider.study import StudyLock
+    path = tmp_path / "registry.lock"
+    code = ("import os,sys; from pathlib import Path; from local_decider.storage import Lock; "
+            "lock=Lock(Path(sys.argv[1])); lock.__enter__(); print('locked',flush=True); os._exit(0)")
+    process = subprocess.run([sys.executable, "-c", code, str(path)], capture_output=True, timeout=10)
+    assert process.returncode == 0 and b"locked" in process.stdout
+    with StudyLock(path):
+        with pytest.raises(FileExistsError):
+            with Lock(path):
+                pass
+    with StudyLock(path):
+        pass
