@@ -1,0 +1,13 @@
+{
+  "state": {
+    "task": "Fix an incorrect result in logic.py and verify the repair",
+    "observations": ["A focused test failed with an AssertionError"],
+    "previous_actions": ["focused_test"],
+    "flags": {"path_known": true, "failure_seen": true}
+  },
+  "available_actions": [
+    {"id": "inspect-failure", "kind": "inspect_failure", "label": "Inspect the failing test and traceback"},
+    {"id": "read-source", "kind": "inspect_file", "label": "Inspect logic.py", "target": "logic.py"},
+    {"id": "defer", "kind": "defer", "label": "Use Codex's own judgment"}
+  ]
+}

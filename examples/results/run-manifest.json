@@ -1,0 +1,73 @@
+{
+  "algorithm_version": 3,
+  "seed": 7,
+  "models": {
+    "linear": {
+      "config": {
+        "population": 24,
+        "parents": 4,
+        "generations": 50,
+        "workers": 2,
+        "minutes": 15.0,
+        "seed": 7,
+        "mutation": 0.15,
+        "mutation_fraction": 0.1,
+        "max_steps": 12
+      },
+      "generations_completed": 50,
+      "model_version": "linear-s7-g40",
+      "dataset_digest": "a0fea74c108c32c841988c9da89d805637202378a72e484134e829b3ebc1e168",
+      "sha256": "635df7c0fa29da65b4b1b066f14852639a09db1e9f990561f0f4f29eecca747c",
+      "validation": {
+        "episodes": 24,
+        "successes": 24,
+        "success_rate": 1.0,
+        "mean_progress": 7.0,
+        "mean_proxy_tokens": 562.5,
+        "mean_success_proxy_tokens": 562.5,
+        "mean_steps": 6.25,
+        "mean_redundant_steps": 0.5,
+        "elapsed_seconds": 0.030662800003483426,
+        "token_metric": "simulated tool-output estimates, not Codex tokens"
+      }
+    },
+    "neural": {
+      "config": {
+        "population": 24,
+        "parents": 4,
+        "generations": 50,
+        "workers": 2,
+        "minutes": 15.0,
+        "seed": 7,
+        "mutation": 0.15,
+        "mutation_fraction": 0.1,
+        "max_steps": 12
+      },
+      "generations_completed": 50,
+      "model_version": "neural-s7-g17",
+      "dataset_digest": "a0fea74c108c32c841988c9da89d805637202378a72e484134e829b3ebc1e168",
+      "sha256": "6aadb02e4edf21a19122bd8b386bc3a91c3e37314eb56650bf20e01cf664925c",
+      "validation": {
+        "episodes": 24,
+        "successes": 12,
+        "success_rate": 0.5,
+        "mean_progress": 5.5,
+        "mean_proxy_tokens": 690.0,
+        "mean_success_proxy_tokens": 470.0,
+        "mean_steps": 8.5,
+        "mean_redundant_steps": 4.25,
+        "elapsed_seconds": 0.040588299998489674,
+        "token_metric": "simulated tool-output estimates, not Codex tokens"
+      }
+    }
+  },
+  "selection": "validation-only checkpoint selection within the final run",
+  "development_limitations": [
+    "Previous development iterations examined synthetic test metrics; this is not an untouched final benchmark",
+    "Eight variants per template use only four distinct initial flag combinations",
+    "Only three held-out defect templates and a single training seed",
+    "Scripted repairs and simulated tool-output token estimates"
+  ],
+  "real_task_data_included": false,
+  "live_validated": false
+}

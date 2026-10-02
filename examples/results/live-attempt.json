@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "blocked",
+  "pairs": [],
+  "candidate_sha256": "635df7c0fa29da65b4b1b066f14852639a09db1e9f990561f0f4f29eecca747c",
+  "codex_model": "gpt-6.1-sol",
+  "metric": "input + output tokens; cached input included",
+  "blocking_error": "Error: failed to initialize in-process app-server client: Access is denied. (os error 5)\n",
+  "completed_pairs": 0,
+  "measured_usage_available": false,
+  "candidate_activated": false
+}

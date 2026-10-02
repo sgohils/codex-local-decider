@@ -12,3 +12,4 @@ runs/
 .local-decider/
 .codex/
 *.log
+pytest-cache-files-*/
