@@ -259,6 +259,8 @@ def test_missing_child_usage_is_unknown_not_zero(setup):
     use(event, data, "Stop")
     row = export(data)["sessions"][0]["turns"][0]
     assert not row["usage_valid"] and row["missing_subagent_usage"] == 1
+    arm = export(data)["sessions"][0]["arm"]
+    assert status(data)["groups"][arm]["measured_turns"] == 0
 
 
 def test_analysis_resamples_chats_and_rejects_small_sample(setup):

@@ -451,6 +451,13 @@ def refresh(data_dir: Path) -> None:
         write_json(data_dir / "study.json", study)
 
 
+def usable_turn(session: dict, turn: dict) -> bool:
+    expected = [child for child, parent in session["subagent_turns"].items() if parent == turn["turn_hash"]]
+    return bool(turn["usage_valid"] and turn["usage"] is not None
+                and all(child in turn.get("usage_threads", []) for child in expected)
+                and not any(s.get("warnings") or s.get("backlog") for s in session["streams"].values()))
+
+
 def status(data_dir: Path, reconcile: bool = False) -> dict:
     if reconcile:
         refresh(data_dir)
@@ -463,11 +470,30 @@ def status(data_dir: Path, reconcile: bool = False) -> dict:
         row = counts[session["arm"]]
         row["chats"] += 1
         row["turns"] += len(session["turns"])
-        row["measured_turns"] += sum(t["usage_valid"] for t in session["turns"].values())
+        row["measured_turns"] += sum(usable_turn(session, t) for t in session["turns"].values())
         row["advice"] += sum(t["advice_count"] for t in session["turns"].values())
         for stream in session["streams"].values():
             warnings.update(stream["warnings"])
+    diagnostics = {}
+    for file in (data_dir / "diagnostics").glob("*.json"):
+        try:
+            kind = read_json(file)["error_type"]
+            diagnostics[kind] = diagnostics.get(kind, 0) + 1
+        except (ValueError, KeyError, OSError):
+            continue
+    training_seconds = 0.0
+    history = data_dir / "worker-history.jsonl"
+    if history.exists():
+        for line in history.read_text().splitlines():
+            try:
+                training_seconds += float(json.loads(line)["elapsed_seconds"])
+            except (ValueError, KeyError):
+                continue
     return {"status": study["status"], "prepared_at": utc(study["prepared_at"]),
+            "hook_configured": bool(study.get("hook_config")),
+            "hook_file_present": bool(study.get("hook_config") and Path(study["hook_config"]).is_file()),
+            "last_hook_at": utc(study["last_hook_at"]) if study["last_hook_at"] else None,
+            "hook_failures": diagnostics, "background_training_wall_seconds": training_seconds,
             "started_at": utc(study["started_at"]) if study["started_at"] else None,
             "deadline": utc(study["deadline"]) if study["deadline"] else None,
             "candidate_sha256": study["candidate_sha256"], "groups": counts,
@@ -488,8 +514,7 @@ def export(data_dir: Path) -> dict:
             expected = [child for child, parent in session["subagent_turns"].items() if parent == t["turn_hash"]]
             missing = sum(child not in t.get("usage_threads", []) for child in expected)
             row["missing_subagent_usage"] = missing
-            bad_stream = any(s.get("warnings") or s.get("backlog") for s in session["streams"].values())
-            row["usage_valid"] = row["usage_valid"] and not missing and not bad_stream
+            row["usage_valid"] = usable_turn(session, t)
             turns.append(row)
         rows.append({"session_hash": identity, "project_hash": session["project_hash"],
                      "arm": session["arm"], "initial_model": session["initial_model"],

@@ -136,10 +136,13 @@ def worker(data_dir: Path) -> dict:
                                  experience_path=data_dir / "experience.jsonl"))
         result = compare(output, seed=7 + episodes_at_start)
         write_json(output / "comparison.json", result)
-        write_json(output / "worker-training.json", {"elapsed_seconds": time.perf_counter() - started,
+        training_record = {"elapsed_seconds": time.perf_counter() - started,
                    "completed_episodes_at_start": episodes_at_start,
                    "models": [{k: v for k, v in model.items() if k != "history"} for model in trained],
-                   "active_changed": False})
+                   "active_changed": False}
+        write_json(output / "worker-training.json", training_record)
+        with (data_dir / "worker-history.jsonl").open("a", encoding="utf-8") as file:
+            file.write(json.dumps(training_record) + "\n")
         with Lock(data_dir / "events.lock"):
             current = read_json(data_dir / "counter.json")
             current["last_trained"] = episodes_at_start
