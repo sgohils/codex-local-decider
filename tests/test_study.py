@@ -12,7 +12,7 @@ from local_decider.features import DIM, TEXT_DIM
 from local_decider.models import Model
 from local_decider.storage import read_json, write_json
 from local_decider.study import (MARKER, analyze, assign, digest, export, handle, install,
-                                outcome, prepare, refresh, status, stop, utc)
+                                outcome, prepare, refresh, set_probe_advice, status, stop, utc)
 
 
 def append(path, record):
@@ -83,6 +83,70 @@ def test_real_probe_is_required_and_excluded(setup):
     assert current["status"] == "running"
     assert current["deadline"] - current["started_at"] == 5 * 86400
     assert export(data)["sessions"] == []
+
+
+def test_explicit_probe_advice_persists_and_stays_excluded(setup):
+    data, _, _ = setup
+    event, path = session(setup, "demo-probe")
+    assert use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"},
+               tool_response="logic.py: solve", tool_use_id="before") == {}
+    identity = digest(event["session_id"])
+    set_probe_advice(data, identity)
+    set_probe_advice(data, identity)  # Idempotent, without duplicate protocol amendments.
+    result = use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"},
+                 tool_response="logic.py: solve", tool_use_id="after")
+    assert result["hookSpecificOutput"]["additionalContext"].startswith("Local advisor:")
+    saved = read_json(data / "sessions" / f"{identity}.json")
+    assert saved["arm"] == "probe" and saved["probe_advice_enabled"]
+    current = status(data)
+    assert current["status"] == "armed" and current["started_at"] is None
+    assert current["groups"]["probe"]["model_decisions"] == 1
+    assert current["groups"]["probe"]["advice"] == 1
+    assert len(export(data)["protocol_amendments"]) == 1
+    assert export(data)["sessions"] == []
+    usage(path, event)
+    use(event, data, "Stop")
+    assert status(data)["status"] == "running"
+    assert read_json(data / "study.json")["verification"]["probe_advice_enabled"]
+    assert export(data)["sessions"] == []
+
+
+def test_probe_opt_in_cannot_override_randomized_arms_or_expiry(setup):
+    data = start(setup)
+    for i in range(4):
+        event, _ = session(setup, f"protected-{i}")
+        identity = digest(event["session_id"])
+        file = data / "sessions" / f"{identity}.json"
+        before = read_json(file)
+        with pytest.raises(ValueError, match="restricted to excluded probe"):
+            set_probe_advice(data, identity)
+        assert read_json(file) == before
+    study = read_json(data / "study.json")
+    study["deadline"] = time.time() - 1
+    write_json(data / "study.json", study)
+    with pytest.raises(ValueError, match="expired"):
+        set_probe_advice(data, digest("probe"))
+    with pytest.raises(ValueError, match="valid chat hash"):
+        set_probe_advice(data, "../study")
+
+
+def test_probe_advice_disable_and_model_failure_allow_normal_work(setup):
+    data, _, _ = setup
+    event, _ = session(setup, "toggle-probe")
+    identity = digest(event["session_id"])
+    set_probe_advice(data, identity)
+    set_probe_advice(data, identity, False)
+    assert use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"},
+               tool_response="logic.py", tool_use_id="disabled") == {}
+    assert status(data)["groups"]["probe"]["model_decisions"] == 0
+    set_probe_advice(data, identity)
+    Path(read_json(data / "study.json")["candidate"]).write_text("broken")
+    assert use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"},
+               tool_response="logic.py", tool_use_id="corrupt") == {}
+    turn = next(iter(read_json(data / "sessions" / f"{identity}.json")["turns"].values()))
+    assert turn["model_failures"] == 1 and turn["advice_count"] == 0
+    with pytest.raises(ValueError, match="checkpoint changed"):
+        set_probe_advice(data, identity)
 
 
 def test_block_randomization_reproducible_balanced_and_stratified():

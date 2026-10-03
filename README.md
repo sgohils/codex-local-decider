@@ -95,6 +95,7 @@ retain the same assignment. No extra hosted coding trials are launched.
 local-decider study start --data-dir work/study --candidate examples/models/candidate.json
 local-decider study install --data-dir work/study --config C:\Users\YOU\.codex\hooks.json
 local-decider study status --data-dir work/study --refresh
+local-decider study probe-advice --data-dir work/study --session CHAT_HASH
 local-decider study analyze --data-dir work/study --output work/study-analysis.json
 local-decider study stop --data-dir work/study
 ```
@@ -102,6 +103,9 @@ local-decider study stop --data-dir work/study
 Review installed hooks using `/hooks`. Missing usage is unknown, never zero. Test
 passes and confirmed task outcomes are separate. See [the registered study protocol](docs/STUDY.md)
 for enrollment, privacy, clustered analysis, failure handling, and the paper workflow.
+The optional `probe-advice` command enables a demonstration only in a specified
+excluded probe chat; add `--disable` to turn it off. It never overrides baseline
+assignments or starts the clock. Protocol amendments are retained for the paper.
 
 ## Development
 

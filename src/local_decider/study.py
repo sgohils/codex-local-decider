@@ -137,6 +137,7 @@ def new_turn(turn_id: str, now: float, model: str) -> dict:
             "tool_calls": 0, "tool_failures": 0, "test_runs": 0, "test_passes": 0,
             "test_failures": 0, "repair_cycles": 0, "advice_count": 0,
             "model_failures": 0, "inference_seconds": 0.0, "collection_seconds": 0.0,
+            "model_decisions": 0, "model_abstentions": 0,
             "test_verified_after_last_patch": False, "outcome": "unknown", "evidence_sha256": None}
 
 
@@ -265,11 +266,45 @@ def maybe_start(study: dict, session: dict, now: float) -> None:
     study.update(status="running", started_at=now, deadline=now + 5 * 86400,
                  verification={"session_hash": session["session_hash"], "verified_at": now,
                                "source": "ordinary Codex hooks and supported transcript usage",
-                               "probe_excluded_from_comparison": True})
+                               "probe_excluded_from_comparison": True,
+                               "probe_advice_enabled": bool(session.get("probe_advice_enabled"))})
+
+
+def set_probe_advice(data_dir: Path, session_hash: str, enabled: bool = True) -> dict:
+    """Explicit demonstration in an excluded probe; never change randomized arms."""
+    if not isinstance(session_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", session_hash):
+        raise ValueError("probe advice requires a valid chat hash from the local registry")
+    with StudyLock(data_dir / "registry.lock"):
+        study = read_json(data_dir / "study.json")
+        now = time.time()
+        if study["status"] not in ("armed", "running") or (study["deadline"] and now >= study["deadline"]):
+            raise ValueError("study is stopped or expired")
+        if session_hash not in study["sessions"]:
+            raise ValueError("chat is not enrolled")
+        file = data_dir / "sessions" / f"{session_hash}.json"
+        session = read_json(file)
+        if session["arm"] != "probe":
+            raise ValueError("manual advice is restricted to excluded probe chats")
+        if enabled:
+            raw = Path(study["candidate"]).read_bytes()
+            if hashlib.sha256(raw).hexdigest() != study["candidate_sha256"]:
+                raise ValueError("frozen checkpoint changed")
+            from .models import Model
+            Model.load(Path(study["candidate"]))
+        if bool(session.get("probe_advice_enabled")) != enabled:
+            session.update(probe_advice_enabled=enabled, probe_advice_changed_at=now)
+            study.setdefault("protocol_amendments", []).append({
+                "at": now, "change": "excluded probe advice enabled" if enabled else "excluded probe advice disabled",
+                "comparison_assignments_unchanged": True, "probe_excluded_from_comparison": True})
+            write_json(file, session)
+            write_json(data_dir / "study.json", study)
+    return {"probe_advice_enabled": enabled, "probe_excluded_from_comparison": True,
+            "study_status": study["status"], "clock_manually_started": False}
 
 
 def advise(study: dict, session: dict, turn: dict, state: State, kind: str | None) -> dict:
-    if session["arm"] != "assisted" or not kind:
+    allowed = session["arm"] == "assisted" or (session["arm"] == "probe" and session.get("probe_advice_enabled"))
+    if not allowed or not kind:
         return {}
     started = time.perf_counter()
     try:
@@ -279,7 +314,9 @@ def advise(study: dict, session: dict, turn: dict, state: State, kind: str | Non
         from .models import Model
         model = Model.load(Path(study["candidate"]))
         decision = model.decide(state, default_actions())
+        turn["model_decisions"] = turn.get("model_decisions", 0) + 1
         if decision["uncertain"] or decision["action_kind"] == "defer":
+            turn["model_abstentions"] = turn.get("model_abstentions", 0) + 1
             return {}
         key = digest(json.dumps([state.flags, decision["action_kind"]], sort_keys=True))
         if key == session.get("last_advice"):
@@ -462,7 +499,8 @@ def status(data_dir: Path, reconcile: bool = False) -> dict:
     if reconcile:
         refresh(data_dir)
     study = read_json(data_dir / "study.json")
-    counts = {arm: {"chats": 0, "turns": 0, "measured_turns": 0, "advice": 0}
+    counts = {arm: {"chats": 0, "turns": 0, "measured_turns": 0, "advice": 0,
+                    "model_decisions": 0, "model_abstentions": 0}
               for arm in ("probe", "baseline", "assisted")}
     warnings = set()
     for identity in study["sessions"]:
@@ -472,6 +510,8 @@ def status(data_dir: Path, reconcile: bool = False) -> dict:
         row["turns"] += len(session["turns"])
         row["measured_turns"] += sum(usable_turn(session, t) for t in session["turns"].values())
         row["advice"] += sum(t["advice_count"] for t in session["turns"].values())
+        row["model_decisions"] += sum(t.get("model_decisions", 0) for t in session["turns"].values())
+        row["model_abstentions"] += sum(t.get("model_abstentions", 0) for t in session["turns"].values())
         for stream in session["streams"].values():
             warnings.update(stream["warnings"])
     diagnostics = {}
@@ -498,7 +538,10 @@ def status(data_dir: Path, reconcile: bool = False) -> dict:
             "deadline": utc(study["deadline"]) if study["deadline"] else None,
             "candidate_sha256": study["candidate_sha256"], "groups": counts,
             "completed_episodes": study["completed_episodes"], "warnings": sorted(warnings),
-            "next": "Trust installed hooks and use a new coding chat" if study["status"] == "armed" else None}
+            "probe_advice_chats": sum(bool(read_json(data_dir / "sessions" / f"{identity}.json").get("probe_advice_enabled"))
+                                      for identity in study["sessions"]),
+            "next": "Complete the probe turn to verify collection" if study["status"] == "armed" and counts["probe"]["chats"]
+                    else "Trust installed hooks and use a new coding chat" if study["status"] == "armed" else None}
 
 
 def export(data_dir: Path) -> dict:
@@ -525,6 +568,7 @@ def export(data_dir: Path) -> dict:
     return {"schema_version": SCHEMA, "protocol": study["protocol"], "status": study["status"],
             "seed": study["seed"], "started_at": study["started_at"], "deadline": study["deadline"],
             "candidate_sha256": study["candidate_sha256"], "verification": bool(study["verification"]),
+            "protocol_amendments": study.get("protocol_amendments", []),
             "sessions": rows, "metric": "reported input + output tokens; cached input included once"}
 
 
@@ -551,6 +595,8 @@ def analyze(value: dict, bootstrap_samples: int = 10000) -> dict:
                       "repair_cycles": sum(t["repair_cycles"] for t in turns),
                       "advice_count": sum(t["advice_count"] for t in turns),
                       "model_failures": sum(t["model_failures"] for t in turns),
+                      "model_decisions": sum(t.get("model_decisions", 0) for t in turns),
+                      "model_abstentions": sum(t.get("model_abstentions", 0) for t in turns),
                       "inference_seconds": sum(t["inference_seconds"] for t in turns),
                       "collection_seconds": sum(t["collection_seconds"] for t in turns),
                       "elapsed_turn_seconds": sum(max(0, t["ended_at"] - t["started_at"])
@@ -719,7 +765,7 @@ def maybe_worker(data_dir: Path) -> None:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Five-day randomized local Codex study")
-    parser.add_argument("action", choices=("start", "install", "hook", "status", "stop", "export", "analyze", "outcome"))
+    parser.add_argument("action", choices=("start", "install", "hook", "status", "stop", "export", "analyze", "outcome", "probe-advice"))
     parser.add_argument("--data-dir", type=Path, required=True)
     parser.add_argument("--candidate", type=Path)
     parser.add_argument("--config", type=Path)
@@ -727,6 +773,7 @@ def main(argv=None):
     parser.add_argument("--output", type=Path)
     parser.add_argument("--refresh", action="store_true")
     parser.add_argument("--keep-hooks", action="store_true")
+    parser.add_argument("--disable", action="store_true", help="Disable optional advice for the specified probe chat")
     parser.add_argument("--session")
     parser.add_argument("--turn")
     parser.add_argument("--result", choices=("solved", "unsolved", "unknown"), default="unknown")
@@ -761,6 +808,8 @@ def main(argv=None):
             result = install(args.data_dir, args.config)
         elif args.action == "status":
             result = status(args.data_dir, args.refresh)
+        elif args.action == "probe-advice":
+            result = set_probe_advice(args.data_dir, args.session, not args.disable)
         elif args.action == "stop":
             result = stop(args.data_dir, not args.keep_hooks)
         elif args.action in ("export", "analyze"):

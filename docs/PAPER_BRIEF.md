@@ -39,6 +39,10 @@ that integration verification remains pending; do not invent a five-day trial.
 If sample size is small or outcomes unknown, publish an inconclusive pilot paper.
 Report instrument coverage, group composition, missing child usage, failure and
 interruption counts, advice delivery, and measured timing limitations.
+Report timestamped protocol amendments from the export, including any explicitly
+enabled advice demonstration in the excluded probe. Distinguish model decisions,
+uncertainty/defer abstentions, and actual recommendation delivery. Discuss possible
+demonstration spillover; do not include probe measurements in randomized estimates.
 
 Show the linear score `w^T phi(s,a)` and neural score
 `v^T tanh(W^T phi(s,a)+b)+c`. Features have 64 normalized hashed-text coordinates

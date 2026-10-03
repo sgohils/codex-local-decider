@@ -25,6 +25,13 @@ Assignments are committed before tool outcomes are inspected. Incomplete blocks
 can yield unequal observed group sizes. Compaction, resume, and follow-up turns
 never rerandomize a chat. Both groups have the same measurement hooks.
 
+The operator can explicitly enable a demonstration in one excluded probe chat
+using `study probe-advice --data-dir DATA --session CHAT_HASH`; add `--disable` to
+turn it off. The default probe has no advice. This setting never changes a randomized
+chat's assignment or starts the clock manually. It records a timestamped protocol
+amendment for the paper. The verification and comparison still exclude the probe.
+Report possible spillover from a demonstration into later ordinary work.
+
 Baseline hooks emit `{}` and do not load a decision model. Assisted hooks load the
 frozen checkpoint and may supply concise, repeated-advice-suppressed recommendations.
 Uncertainty, deferred decisions, corruption, and unavailable models emit `{}`.
@@ -59,7 +66,8 @@ Private registry files contain local transcript paths for reconciliation; public
 exports omit these paths and request IDs. Exported per-chat rows still require
 review before sharing. Publish only aggregate research results by default.
 
-For each turn, record usage availability, token counts, tool failures, test passes
+For each turn, record model decisions and uncertainty/defer abstentions separately
+from delivered advice, usage availability, token counts, tool failures, test passes
 and failures, post-failure editing events (a retry proxy), advice count, model
 failures, inference time, collection time, elapsed turn time, and interruption.
 Follow-up turns are reported separately: they are not automatically retries.
