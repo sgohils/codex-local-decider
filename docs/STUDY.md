@@ -11,6 +11,9 @@ is a probe: it receives no advice and never enters the comparison. Its ordinary
 PostToolUse and Stop/Interrupt hooks must observe supported, nonzero token usage
 before the registry sets the start time and a deadline exactly five days later.
 Delayed transcript writes can be reconciled using `study status --refresh`.
+While armed, installed hooks also reconcile the existing probe after delayed
+writes. An unrelated maintenance hook can trigger that read; it is not enrolled
+and cannot itself supply the completion or token evidence needed to start.
 No additional hosted coding trials are launched.
 
 Only new chats whose transcript creation time is after preparation qualify.
@@ -59,6 +62,13 @@ relevant usage measurement rather than imply zero cost. Unknown formats cannot
 verify the start of the study. The format is versioned because Codex warns it is
 not stable: [official hooks documentation](https://learn.chatgpt.com/docs/hooks).
 
+The reader has a 256 KB parsing limit per record and an 8 MB read budget per call.
+Large top-level `response_item` content records contain no usage consumed by the
+accounting adapters. They are skipped in bounded chunks without retaining their
+contents, including across partial writes and budget boundaries. Skipped content
+counts are reported. Oversized records of other types mark usage unknown and are
+streamed past, so a large entry cannot permanently stall the reader.
+
 Records contain hashes, model names, observable flags, numeric metrics, and a
 small fixed coding vocabulary. They do not retain full prompts, identifiers,
 source code, suggested command arguments, tool output, or copied transcripts.
@@ -75,6 +85,7 @@ Elapsed time includes tool and hook delays and can include time waiting for appr
 Internal hook timers exclude interpreter startup and final record writes; inference
 timing includes model import, loading, integrity checks, and scoring. Do not claim
 these internal timings are complete process CPU measurements.
+Pre-study probe reconciliation after a hook is also outside those turn timers.
 
 Test passes after a recorded patch are **test-verified observations**, not proof
 that the user's task is solved. Confirmed outcomes require operator annotations:

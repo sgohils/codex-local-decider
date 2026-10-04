@@ -25,6 +25,12 @@ MARKER = "codex-local-decider-randomized-study"
 EVENTS = ("SessionStart", "UserPromptSubmit", "PostToolUse", "Stop", "Interrupt",
           "SessionEnd", "SubagentStart", "SubagentStop")
 TOKEN_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens")
+MAX_RECORD_BYTES = 256_000
+MAX_STREAM_READ_BYTES = 8_000_000
+# Only top-level response_item content is ignored by every token accounting adapter.
+IGNORED_CONTENT_HEADER = re.compile(
+    rb'^\s*\{\s*(?:"timestamp"\s*:\s*"[^"\r\n]*"\s*,\s*)?'
+    rb'"type"\s*:\s*"response_item"\s*[,}]')
 CODING = re.compile(r"\b(fix|debug|bug|implement|refactor|build|code|coding|test|tests|function|regression|feature)\b", re.I)
 RESEARCH = re.compile(r"research paper|literature review|study maintenance|randomized study|write.*preprint", re.I)
 
@@ -167,15 +173,27 @@ def read_stream(session: dict, path: Path, cutoff: float | None = None,
     with path.open("rb") as file:
         file.seek(stream["offset"])
         consumed = 0
-        while consumed < 8_000_000:
-            line = file.readline(256_001)
-            if not line or not line.endswith(b"\n"):
+        while consumed < MAX_STREAM_READ_BYTES:
+            line = file.readline(min(MAX_RECORD_BYTES + 1, MAX_STREAM_READ_BYTES - consumed))
+            if not line:
                 break
             consumed += len(line)
-            stream["offset"] = file.tell()
-            if len(line) > 256_000:
-                stream["warnings"] = ["oversized_record"]
+            if len(line) > MAX_RECORD_BYTES or "discarding_record" in stream:
+                # Stream large content in bounded chunks, without parsing or retaining it.
+                # Partial large lines resume on the next hook, without losing the boundary.
+                if "discarding_record" not in stream:
+                    stream["discarding_record"] = bool(IGNORED_CONTENT_HEADER.match(line))
+                stream["offset"] = file.tell()
+                if line.endswith(b"\n"):
+                    ignored_content = stream.pop("discarding_record")
+                    if ignored_content:
+                        stream["skipped_content_records"] = stream.get("skipped_content_records", 0) + 1
+                    else:
+                        stream["warnings"] = ["oversized_record"]
                 continue
+            if not line.endswith(b"\n"):
+                break
+            stream["offset"] = file.tell()
             try:
                 record = json.loads(line)
             except (ValueError, TypeError):
@@ -251,7 +269,7 @@ def read_stream(session: dict, path: Path, cutoff: float | None = None,
                 turn["usage"] = {k: usage[k] + delta[k] for k in TOKEN_KEYS}
                 turn["usage_source"] = "cumulative_delta"
                 turn["usage_valid"] = turn["usage"]["input_tokens"] + turn["usage"]["output_tokens"] > 0
-        stream["backlog"] = stream["offset"] < path.stat().st_size
+        stream["backlog"] = "discarding_record" in stream or stream["offset"] < path.stat().st_size
 
 
 def maybe_start(study: dict, session: dict, now: float) -> None:
@@ -500,7 +518,7 @@ def status(data_dir: Path, reconcile: bool = False) -> dict:
         refresh(data_dir)
     study = read_json(data_dir / "study.json")
     counts = {arm: {"chats": 0, "turns": 0, "measured_turns": 0, "advice": 0,
-                    "model_decisions": 0, "model_abstentions": 0}
+                    "model_decisions": 0, "model_abstentions": 0, "skipped_content_records": 0}
               for arm in ("probe", "baseline", "assisted")}
     warnings = set()
     for identity in study["sessions"]:
@@ -512,6 +530,7 @@ def status(data_dir: Path, reconcile: bool = False) -> dict:
         row["advice"] += sum(t["advice_count"] for t in session["turns"].values())
         row["model_decisions"] += sum(t.get("model_decisions", 0) for t in session["turns"].values())
         row["model_abstentions"] += sum(t.get("model_abstentions", 0) for t in session["turns"].values())
+        row["skipped_content_records"] += sum(s.get("skipped_content_records", 0) for s in session["streams"].values())
         for stream in session["streams"].values():
             warnings.update(stream["warnings"])
     diagnostics = {}
@@ -563,6 +582,7 @@ def export(data_dir: Path) -> dict:
                      "arm": session["arm"], "initial_model": session["initial_model"],
                      "client_version": session["client_version"],
                      "assigned_at": session["assigned_at"], "closed": session["closed"],
+                     "skipped_content_records": sum(s.get("skipped_content_records", 0) for s in session["streams"].values()),
                      "subagent_count": len(session["subagents"]), "turns": turns,
                      "usage_warnings": sorted({w for s in session["streams"].values() for w in s["warnings"]})})
     return {"schema_version": SCHEMA, "protocol": study["protocol"], "status": study["status"],
@@ -582,6 +602,7 @@ def analyze(value: dict, bootstrap_samples: int = 10000) -> dict:
         total = sum(t["usage"]["input_tokens"] + t["usage"]["output_tokens"] for t in measured)
         confirmed = [t for t in turns if t["outcome"] != "unknown"]
         groups[arm] = {"chats": len(chats), "turns": len(turns), "measured_turns": len(measured),
+                      "skipped_content_records": sum(s.get("skipped_content_records", 0) for s in chats),
                       "missing_usage_turns": len(turns) - len(measured), "total_tokens": total,
                       "mean_tokens_per_measured_turn": total / len(measured) if measured else None,
                       "cached_input_tokens": sum(t["usage"]["cached_input_tokens"] for t in measured),
@@ -786,6 +807,10 @@ def main(argv=None):
             if len(raw) <= 256000:
                 event = json.loads(raw)
                 result = handle(event, args.data_dir)
+                if read_json(args.data_dir / "study.json")["status"] == "armed":
+                    # Catch up the enrolled probe after delayed writes on an unrelated hook.
+                    # Only its real completion and supported usage can verify the clock.
+                    refresh(args.data_dir)
                 if event.get("hook_event_name") == "Stop":
                     maybe_worker(args.data_dir)
         except Exception as error:

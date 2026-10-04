@@ -1,3 +1,4 @@
+import io
 import json
 import subprocess
 import sys
@@ -11,7 +12,8 @@ import pytest
 from local_decider.features import DIM, TEXT_DIM
 from local_decider.models import Model
 from local_decider.storage import read_json, write_json
-from local_decider.study import (MARKER, analyze, assign, digest, export, handle, install,
+from local_decider.study import (MARKER, MAX_RECORD_BYTES, MAX_STREAM_READ_BYTES,
+                                analyze, assign, digest, export, handle, install, main,
                                 outcome, prepare, refresh, set_probe_advice, status, stop, utc)
 
 
@@ -376,3 +378,90 @@ def test_crashed_hook_releases_registry_lock(tmp_path):
                 pass
     with StudyLock(path):
         pass
+
+
+def test_large_content_record_does_not_stall_or_count_embedded_usage(setup):
+    data, _, _ = setup
+    event, path = session(setup, "large-content")
+    use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"})
+    embedded = json.dumps({"type": "token_usage_record", "usage": {"input_tokens": 999999}})
+    append(path, {"timestamp": utc(time.time()), "type": "response_item",
+                  "payload": {"output": embedded + "PRIVATE_SOURCE" * 22000}})
+    usage(path, event)
+    use(event, data, "Stop")
+    assert status(data)["status"] == "running"
+    saved = read_json(data / "sessions" / f"{digest(event['session_id'])}.json")
+    stream = next(iter(saved["streams"].values()))
+    turn = next(iter(saved["turns"].values()))
+    assert stream["skipped_content_records"] == 1 and not stream["backlog"]
+    assert not stream["warnings"] and turn["usage"]["input_tokens"] == 100
+    assert "PRIVATE_SOURCE" not in json.dumps(saved)
+
+
+def test_partial_large_content_resumes_at_the_line_boundary(setup):
+    data, _, _ = setup
+    event, path = session(setup, "partial-large")
+    use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"})
+    encoded = json.dumps({"timestamp": utc(time.time()), "type": "response_item",
+                          "payload": {"output": "x" * (MAX_RECORD_BYTES * 3)}})
+    split = MAX_RECORD_BYTES + 500
+    with path.open("a", encoding="utf-8") as file:
+        file.write(encoded[:split])
+    use(event, data, "Stop")
+    assert status(data)["status"] == "armed"
+    with path.open("a", encoding="utf-8") as file:
+        file.write(encoded[split:] + "\n")
+    usage(path, event)
+    refresh(data)
+    current = status(data)
+    assert current["status"] == "running"
+    assert current["groups"]["probe"]["skipped_content_records"] == 1
+
+
+def test_large_content_recovers_across_the_bounded_read_budget(setup):
+    data, _, _ = setup
+    event, path = session(setup, "bounded-large")
+    use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"})
+    append(path, {"timestamp": utc(time.time()), "type": "response_item",
+                  "payload": {"output": "x" * (MAX_STREAM_READ_BYTES + 500000)}})
+    usage(path, event)
+    use(event, data, "Stop")
+    assert status(data)["status"] == "armed"
+    saved = read_json(data / "sessions" / f"{digest(event['session_id'])}.json")
+    stream = next(iter(saved["streams"].values()))
+    assert stream["offset"] < MAX_STREAM_READ_BYTES + 2000
+    assert stream["backlog"] and stream["discarding_record"]
+    refresh(data)
+    assert status(data)["status"] == "running"
+    assert status(data)["groups"]["probe"]["skipped_content_records"] == 1
+
+
+def test_oversized_usage_record_remains_unknown_without_stalling(setup):
+    data, _, _ = setup
+    event, path = session(setup, "unknown-large")
+    use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"})
+    append(path, {"timestamp": utc(time.time()), "type": "token_usage_record",
+                  "payload": {"padding": "x" * (MAX_RECORD_BYTES + 10)}})
+    usage(path, event)
+    assert use(event, data, "Stop") == {}
+    current = status(data)
+    assert current["status"] == "armed" and current["warnings"] == ["oversized_record"]
+    saved = read_json(data / "sessions" / f"{digest(event['session_id'])}.json")
+    assert not next(iter(saved["streams"].values()))["backlog"]
+    assert current["groups"]["probe"]["measured_turns"] == 0
+
+
+def test_unrelated_installed_hook_reconciles_a_completed_probe(setup, monkeypatch, capsys):
+    data, _, _ = setup
+    event, path = session(setup, "late-probe")
+    use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"})
+    use(event, data, "Stop")
+    assert status(data)["status"] == "armed"
+    usage(path, event)
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps({
+        "hook_event_name": "SessionStart", "session_id": "unrelated-maintenance"})))
+    main(["hook", "--data-dir", str(data)])
+    assert json.loads(capsys.readouterr().out) == {}
+    assert status(data)["status"] == "running"
+    assert len(read_json(data / "study.json")["sessions"]) == 1
+    assert export(data)["sessions"] == []
