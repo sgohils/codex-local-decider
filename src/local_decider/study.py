@@ -276,7 +276,7 @@ def maybe_start(study: dict, session: dict, now: float) -> None:
     if study["status"] != "armed" or session["arm"] != "probe":
         return
     verified = [t for t in session["turns"].values()
-                if t["status"] in ("completed", "interrupted") and t["usage_valid"]]
+                if t["status"] in ("completed", "interrupted") and usable_turn(session, t)]
     if not verified or not session.get("post_tool_seen"):
         return
     if any(s.get("warnings") or s.get("backlog") for s in session["streams"].values()):

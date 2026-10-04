@@ -465,3 +465,23 @@ def test_unrelated_installed_hook_reconciles_a_completed_probe(setup, monkeypatc
     assert status(data)["status"] == "running"
     assert len(read_json(data / "study.json")["sessions"]) == 1
     assert export(data)["sessions"] == []
+
+
+def test_probe_waits_for_complete_subagent_usage(setup):
+    data, _, _ = setup
+    event, path = session(setup, "probe-child")
+    use(event, data, "PostToolUse", tool_name="Bash", tool_input={"command": "rg solve"})
+    use(event, data, "SubagentStart", agent_id="child")
+    usage(path, event)
+    use(event, data, "Stop")
+    assert status(data)["status"] == "armed"
+    assert status(data)["groups"]["probe"]["measured_turns"] == 0
+    child_path = path.with_name("probe-child-agent.jsonl")
+    append(child_path, {"type": "session_meta", "payload": {
+        "id": "child", "timestamp": utc(time.time()),
+        "source": {"subagent": {"thread_spawn": {"parent_thread_id": "probe-child"}}}}})
+    usage(child_path, {**event, "session_id": "child", "turn_id": "child-turn"}, "child-response")
+    use(event, data, "SubagentStop", agent_id="child", agent_transcript_path=str(child_path))
+    assert status(data)["status"] == "running"
+    assert status(data)["groups"]["probe"]["measured_turns"] == 1
+    assert export(data)["sessions"] == []
