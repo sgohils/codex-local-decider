@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "dataset_digest": "a0fea74c108c32c841988c9da89d805637202378a72e484134e829b3ebc1e168",
+  "seed": 7,
+  "split_counts": {
+    "train": 72,
+    "validation": 24,
+    "test": 24
+  },
+  "metrics": {
+    "linear": {
+      "episodes": 24,
+      "successes": 24,
+      "success_rate": 1.0,
+      "mean_progress": 7.0,
+      "mean_proxy_tokens": 562.5,
+      "mean_success_proxy_tokens": 562.5,
+      "mean_steps": 6.25,
+      "mean_redundant_steps": 0.5,
+      "elapsed_seconds": 0.08256759999494534,
+      "token_metric": "simulated tool-output estimates, not Codex tokens"
+    },
+    "neural": {
+      "episodes": 24,
+      "successes": 12,
+      "success_rate": 0.5,
+      "mean_progress": 5.5,
+      "mean_proxy_tokens": 690.0,
+      "mean_success_proxy_tokens": 470.0,
+      "mean_steps": 8.5,
+      "mean_redundant_steps": 4.25,
+      "elapsed_seconds": 0.06044750000000931,
+      "token_metric": "simulated tool-output estimates, not Codex tokens"
+    },
+    "rules": {
+      "episodes": 24,
+      "successes": 24,
+      "success_rate": 1.0,
+      "mean_progress": 7.0,
+      "mean_proxy_tokens": 597.5,
+      "mean_success_proxy_tokens": 597.5,
+      "mean_steps": 6.75,
+      "mean_redundant_steps": 0.0,
+      "elapsed_seconds": 0.000777699999161996,
+      "token_metric": "simulated tool-output estimates, not Codex tokens"
+    },
+    "random": {
+      "episodes": 24,
+      "successes": 1,
+      "success_rate": 0.041666666666666664,
+      "mean_progress": 4.5,
+      "mean_proxy_tokens": 1130.4166666666667,
+      "mean_success_proxy_tokens": 960.0,
+      "mean_steps": 12.0,
+      "mean_redundant_steps": 8.833333333333334,
+      "elapsed_seconds": 0.0034992000000784174,
+      "token_metric": "simulated tool-output estimates, not Codex tokens"
+    }
+  },
+  "candidate": "linear",
+  "descriptive_test_best": "linear",
+  "live_validated": false,
+  "limitations": [
+    "Small scripted Python workflows with oracle repairs",
+    "No calibrated probability or general coding capability",
+    "Proxy token counts do not demonstrate Codex token savings"
+  ]
+}

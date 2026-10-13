@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "author": "sgohils",
+  "pages": 14,
+  "manuscript_words": 5006,
+  "study_window_start": "2026-10-04T17:27:21.084551-04:00",
+  "study_window_end": "2026-10-09T17:27:21.084551-04:00",
+  "frozen_at": "2026-10-12T21:22:54.018651-04:00",
+  "frozen_sha256": "6ac14eee87f49ae57014c79a36198be8cd0e734807a006c8f334eff59c52fe3c",
+  "pdf_renderer": "ReportLab 4.4.9",
+  "render_python": "3.12.14",
+  "pdf_latex_compiled": false,
+  "pdf_invariant_metadata_dates": true,
+  "standalone_latex_compiler": "Codex desktop built-in LaTeX editor",
+  "standalone_latex_validation": "success",
+  "visual_inspection": "all 14 final pages inspected",
+  "figure_formats": [
+    "SVG",
+    "PDF",
+    "PNG"
+  ],
+  "aggregate_verification": "passed",
+  "artifact_python_lint": "ruff E4/E7/E9/F passed",
+  "privacy_check": "No actual chat/project/turn hashes, transcript paths, or private task rows in publication files",
+  "normal_candidate_active": false,
+  "research_repository_private": true,
+  "experimental_hooks": "retained as no-ops; canonical stop --keep-hooks used",
+  "field_interpretation": "inconclusive; no usable final token measurements",
+  "files": [
+    {
+      "path": "aggregate-results.json",
+      "bytes": 4395,
+      "sha256": "51fab252448c35a8d5f276db35e21ec40e3699c4ea764535e5dec2a5032a9416"
+    },
+    {
+      "path": "build_paper.py",
+      "bytes": 30822,
+      "sha256": "54e72707e8f063ebd157c3a881a8160bd141532a1564d90ae6b768a7e5520c61"
+    },
+    {
+      "path": "codex-local-decider-preprint.md",
+      "bytes": 44235,
+      "sha256": "6e27c9a3e4b3c8c566b4131f82dcc0babf19261cecfa48576adbbb7433e5ee02"
+    },
+    {
+      "path": "codex-local-decider-preprint.pdf",
+      "bytes": 135507,
+      "sha256": "09da2d9024ce42ef332ac3a43ca5e38238d643764b1d28e766ac3ca29de1108b"
+    },
+    {
+      "path": "codex-local-decider-preprint.tex",
+      "bytes": 49953,
+      "sha256": "b3feb9aac6d5943081c93ef46dc1256f91c182ba72c9a6cbed62d98009dc1327"
+    },
+    {
+      "path": "figures/evolution-curves.pdf",
+      "bytes": 53677,
+      "sha256": "96f1781f94ec208fb58cb134d085fc63501b4f5c4e7d3680f396b139ba712cf8"
+    },
+    {
+      "path": "figures/evolution-curves.png",
+      "bytes": 66906,
+      "sha256": "3d63c6b971321eff9a33edb7c15810ea53b6f19b92a2462fa828c4fe778d3727"
+    },
+    {
+      "path": "figures/evolution-curves.svg",
+      "bytes": 31957,
+      "sha256": "30646cd79ddd14736e685d4b0b0f2eaf63c2924028d55f2db0bf848371b60834"
+    },
+    {
+      "path": "figures/field-coverage.pdf",
+      "bytes": 51045,
+      "sha256": "e4c0ae21276cbee5a66aed2939ea88194810f3ad81e3cd30298361f34e9fdb3c"
+    },
+    {
+      "path": "figures/field-coverage.png",
+      "bytes": 45816,
+      "sha256": "71358c9187348cfe877f4d7f1d476cb2a57dfc8a6307efacffcdb14b909c3599"
+    },
+    {
+      "path": "figures/field-coverage.svg",
+      "bytes": 1926,
+      "sha256": "93fd463fafbc02e5920d7c9d6e73598450835cdf1c8a0e2847536cbc06482b98"
+    },
+    {
+      "path": "figures/synthetic-comparison.pdf",
+      "bytes": 51468,
+      "sha256": "1ae490e65a386963f5871da000957c3881735d2ad72e13d38be880c408d7a9e0"
+    },
+    {
+      "path": "figures/synthetic-comparison.png",
+      "bytes": 44424,
+      "sha256": "d812001a2de7f068aad3a7372ea64abbedde430b20228fb987e88bc80e6ce160"
+    },
+    {
+      "path": "figures/synthetic-comparison.svg",
+      "bytes": 8306,
+      "sha256": "21c05e0a479c7746b36cb53ba89cfaa1011c0f6bcc1bfdcbf8f3df583f909c26"
+    },
+    {
+      "path": "figures/system-flow.pdf",
+      "bytes": 51702,
+      "sha256": "7f9dfcbb407956767b2f7ece1e348cd9176d64243887613d2df02b5b99d8088c"
+    },
+    {
+      "path": "figures/system-flow.png",
+      "bytes": 59286,
+      "sha256": "11368be4c6999743f6134bc8c9d9cb111b9e7e8388dcdd9b0369b101f715904c"
+    },
+    {
+      "path": "figures/system-flow.svg",
+      "bytes": 4493,
+      "sha256": "e161aede190bead5ca5c36b509e233bad9bee19090024d7170dac458c22fe9fc"
+    },
+    {
+      "path": "learning-curves.csv",
+      "bytes": 5047,
+      "sha256": "6fd683d1b819328a45edbc4e92129102a2242ebc7f2f24cad6a0b51b629ee1fd"
+    },
+    {
+      "path": "manuscript-blocks.json",
+      "bytes": 49128,
+      "sha256": "566361be17587fb1fea1d1d075c41e4bd27b5dfbea47c88adbd80aec931aa43a"
+    },
+    {
+      "path": "manuscript.py",
+      "bytes": 48589,
+      "sha256": "13bdef9e0a41737ddace9d98eaa74d10c487c8e36141e10e2afac902d98cf183"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1698,
+      "sha256": "555e71f044c1fb4883fddc6060dd03947b84459c996a5a93846874b9a7dac76a"
+    },
+    {
+      "path": "references.bib",
+      "bytes": 2243,
+      "sha256": "71398e3a2c2f2465c98ffd088e37a86adca0de7e875f6d8eb9f998d60d81cb2b"
+    },
+    {
+      "path": "REPRODUCE.md",
+      "bytes": 2426,
+      "sha256": "299f02bf8f18be2f898fc88e8aa6fb62da7831cb47d93b46f4ebf3a3441e6e33"
+    },
+    {
+      "path": "synthetic-results.json",
+      "bytes": 2156,
+      "sha256": "3287502934ebfbfa35f43d26a17782fcbc47a3033123b056877e2f2a4a403ac5"
+    },
+    {
+      "path": "synthetic-run-manifest.json",
+      "bytes": 2509,
+      "sha256": "f38d40414d3231323c02c608d000bad8088c2c2a64b43c241878b966eab67f71"
+    },
+    {
+      "path": "verify_aggregate_results.py",
+      "bytes": 2379,
+      "sha256": "aacb8e9ca484433c654c0683d70eb0b09037f409faa4ac6025d791b69ae4169c"
+    }
+  ]
+}

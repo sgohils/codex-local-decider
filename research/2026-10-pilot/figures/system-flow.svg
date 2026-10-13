@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="475" height="175" preserveAspectRatio="xMinYMin meet" viewBox="0 0 475 175" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="475" height="175"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-175)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="115" width="141" height="42" rx="4" ry="4" style="stroke: rgb(14%,36%,50%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(91%,94%,96%); fill-rule: evenodd;"/>
+			<text x="25.390136718749993" y="136.0" style="font-family: PaperSerif; font-size: 9px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,272) scale(1,-1)">New eligible coding chat</text>
+			<rect x="167" y="115" width="141" height="42" rx="4" ry="4" style="stroke: rgb(14%,36%,50%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(91%,94%,96%); fill-rule: evenodd;"/>
+			<text x="187.2529296875" y="136.0" style="font-family: PaperSerif; font-size: 9px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,272) scale(1,-1)">Persistent 50/50 assignment</text>
+			<rect x="334" y="115" width="141" height="42" rx="4" ry="4" style="stroke: rgb(14%,36%,50%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(91%,94%,96%); fill-rule: evenodd;"/>
+			<text x="369.258056640625" y="136.0" style="font-family: PaperSerif; font-size: 9px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,272) scale(1,-1)">Actual Codex work</text>
+			<path d="M 142,136 L 166,136 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 0.8;"/>
+			<path d="M 166,136 L 162,139 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 166,136 L 162,133 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 309,136 L 333,136 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 0.8;"/>
+			<path d="M 333,136 L 329,139 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 333,136 L 329,133 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<rect x="167" y="40" width="141" height="48" rx="4" ry="4" style="stroke: rgb(14%,36%,50%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(91%,94%,96%); fill-rule: evenodd;"/>
+			<text x="179.010986328125" y="69.0" style="font-family: PaperSerif; font-size: 9px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,138) scale(1,-1)">Baseline: record only / Assisted:</text>
+			<text x="195.3564453125" y="59.0" style="font-family: PaperSerif; font-size: 9px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,118) scale(1,-1)">frozen advisor + record</text>
+			<path d="M 237,115 L 237,89 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 0.8;"/>
+			<path d="M 237,89 L 234,93 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 237,89 L 240,93 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<rect x="334" y="40" width="141" height="48" rx="4" ry="4" style="stroke: rgb(14%,36%,50%); stroke-linecap: butt; stroke-width: 0.8; fill: rgb(91%,94%,96%); fill-rule: evenodd;"/>
+			<text x="340.39697265625" y="69.0" style="font-family: PaperSerif; font-size: 9px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,138) scale(1,-1)">Read-only usage extraction; hashed</text>
+			<text x="381.386962890625" y="59.0" style="font-family: PaperSerif; font-size: 9px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,118) scale(1,-1)">local records</text>
+			<path d="M 308,64 L 333,64 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 0.8;"/>
+			<path d="M 333,64 L 329,67 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 333,64 L 329,61 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="0" y="14" style="font-family: PaperSerif; font-size: 9px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,28) scale(1,-1)">Deadline guard -&gt; frozen snapshot -&gt; coverage checks -&gt; descriptive analysis</text>
+		</g>
+	</g>
+</svg>

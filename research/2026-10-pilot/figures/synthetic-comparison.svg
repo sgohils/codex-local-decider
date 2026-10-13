@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="475" height="190" preserveAspectRatio="xMinYMin meet" viewBox="0 0 475 190" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="475" height="190"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-190)" style="clip-path: url(#clip)">
+		<g transform="">
+			<text x="35" y="175" style="font-family: PaperSerif; font-size: 10px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,350) scale(1,-1)">Synthetic completions / 24</text>
+			<path d="M 35,38 L 220,38 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 35,38 L 35,154 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 35,38 L 220,38 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="26.0" y="35.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,70) scale(1,-1)">0</text>
+			<path d="M 35,67 L 220,67 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="26.0" y="64.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,128) scale(1,-1)">6</text>
+			<path d="M 35,96 L 220,96 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="22.0" y="93.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,186) scale(1,-1)">12</text>
+			<path d="M 35,125 L 220,125 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="22.0" y="122.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,244) scale(1,-1)">18</text>
+			<path d="M 35,154 L 220,154 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="22.0" y="151.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,302) scale(1,-1)">24</text>
+			<rect x="44" y="38" width="27" height="116.0" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0; fill: rgb(14%,36%,50%); fill-rule: evenodd;"/>
+			<text x="53.5" y="159.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,318) scale(1,-1)">24</text>
+			<text x="47.0625" y="24" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,48) scale(1,-1)">Linear</text>
+			<rect x="89" y="38" width="27" height="58.0" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0; fill: rgb(74%,41%,21%); fill-rule: evenodd;"/>
+			<text x="98.5" y="101.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,202) scale(1,-1)">12</text>
+			<text x="91.6171875" y="24" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,48) scale(1,-1)">Neural</text>
+			<rect x="134" y="38" width="27" height="116.0" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0; fill: rgb(35%,40%,45%); fill-rule: evenodd;"/>
+			<text x="143.5" y="159.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,318) scale(1,-1)">24</text>
+			<text x="138.388671875" y="24" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,48) scale(1,-1)">Rules</text>
+			<rect x="179" y="38" width="27" height="4.833333333333336" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0; fill: rgb(35%,40%,45%); fill-rule: evenodd;"/>
+			<text x="190.5" y="47.833333333333336" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,95) scale(1,-1)">1</text>
+			<text x="178.9453125" y="24" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,48) scale(1,-1)">Random</text>
+			<text x="280" y="175" style="font-family: PaperSerif; font-size: 10px;fill: rgb(14%,36%,50%); stroke:none;" transform="translate(0,350) scale(1,-1)">Mean simulated context / episode</text>
+			<path d="M 280,38 L 465,38 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 280,38 L 280,154 Z" style="stroke: rgb(35%,40%,45%); stroke-linecap: butt; stroke-width: 1;"/>
+			<path d="M 280,38 L 465,38 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="271.0" y="35.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,70) scale(1,-1)">0</text>
+			<path d="M 280,67 L 465,67 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="263.0" y="64.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,128) scale(1,-1)">300</text>
+			<path d="M 280,96 L 465,96 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="263.0" y="93.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,186) scale(1,-1)">600</text>
+			<path d="M 280,125 L 465,125 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="263.0" y="122.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,244) scale(1,-1)">900</text>
+			<path d="M 280,154 L 465,154 Z" style="stroke: rgb(85%,88%,90%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="259.0" y="151.0" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,302) scale(1,-1)">1200</text>
+			<rect x="289" y="38" width="27" height="54.375" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0; fill: rgb(14%,36%,50%); fill-rule: evenodd;"/>
+			<text x="293.5" y="97.375" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,194) scale(1,-1)">562.5</text>
+			<text x="292.0625" y="24" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,48) scale(1,-1)">Linear</text>
+			<rect x="334" y="38" width="27" height="66.7" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0; fill: rgb(74%,41%,21%); fill-rule: evenodd;"/>
+			<text x="338.5" y="109.7" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,219) scale(1,-1)">690.0</text>
+			<text x="336.6171875" y="24" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,48) scale(1,-1)">Neural</text>
+			<rect x="379" y="38" width="27" height="57.758333333333326" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0; fill: rgb(35%,40%,45%); fill-rule: evenodd;"/>
+			<text x="383.5" y="100.75833333333333" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,201) scale(1,-1)">597.5</text>
+			<text x="383.388671875" y="24" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,48) scale(1,-1)">Rules</text>
+			<rect x="424" y="38" width="27" height="109.27361111111111" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 0; fill: rgb(35%,40%,45%); fill-rule: evenodd;"/>
+			<text x="426.5" y="152.2736111111111" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,304) scale(1,-1)">1130.4</text>
+			<text x="423.9453125" y="24" style="font-family: PaperSerif; font-size: 8px;fill: rgb(35%,40%,45%); stroke:none;" transform="translate(0,48) scale(1,-1)">Random</text>
+		</g>
+	</g>
+</svg>
